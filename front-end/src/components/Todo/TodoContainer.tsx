@@ -36,8 +36,8 @@ export const TodoContainer: React.FC = () => {
     setTodoId('');
     setTodoValue(title);
     setState('view');
-    toggleModal();
     setTodoDate(formatDate(createdAt));
+    toggleModal();
   };
 
   const editNote = (id: string, title: string) => {
