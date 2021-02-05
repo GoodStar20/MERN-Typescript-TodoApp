@@ -1,58 +1,74 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import {
   deleteTodo,
   getTodos,
-  postTodos,
-  putTodos
-} from '../../redux/todo/todoReducer';
+  postTodo,
+  putTodo
+} from '../../redux/todo/action';
 import { Todo } from './Todo';
+import { TodoModal } from './TodoModal';
 
 export const TodoContainer: React.FC = () => {
-  const notes = useSelector((state: any) => state.todoList.notes);
+  const { notes } = useSelector((state: any) => state.todoList);
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
   const [state, setState] = useState('');
-  const [listValue, setListValue] = useState('');
-  const [listId, setListId] = useState('');
+  const [todoValue, setTodoValue] = useState('');
+  const [todoDate, setTodoDate] = useState('');
+  const [todoId, setTodoId] = useState('');
 
   const toggleModal = () => {
     setIsOpen(!isOpen);
   };
+
   const uploadNotes = () => {
     dispatch(getTodos());
   };
   const newNote = () => {
+    setTodoId('');
     setState('add');
-    setListValue('');
+    setTodoValue('');
     toggleModal();
   };
-  const viewNote = (id: string, title: string) => {
-    setListId('');
-    setListValue(title);
+
+  const viewNote = (id: string, title: string, createdAt: string) => {
+    setTodoId('');
+    setTodoValue(title);
     setState('view');
     toggleModal();
+    setTodoDate(formatDate(createdAt));
   };
-  const editNote = (id: string, title: string) => {
-    setListId(id);
-    setListValue(title);
-    setState('edit');
 
+  const editNote = (id: string, title: string) => {
+    setTodoId(id);
+    setTodoValue(title);
+    setState('edit');
     toggleModal();
   };
+
   const deleteNote = (id: string) => {
     dispatch(deleteTodo(id));
   };
+
   const updateNote = () => {
-    if (listValue !== '') {
-      if (listId === '') {
-        dispatch(postTodos(listValue));
+    if (todoValue !== '') {
+      if (todoId === '') {
+        dispatch(postTodo(todoValue));
       } else {
-        dispatch(putTodos(listId, listValue));
+        dispatch(putTodo(todoId, todoValue));
       }
     }
     toggleModal();
+  };
+
+  const formatDate = (date: string) => {
+    const changeDate = new Date(date);
+    const year = changeDate.getFullYear();
+    const month = '0' + (changeDate.getMonth() + 1).toString().slice(-2);
+    const day = '0' + changeDate.getDate().toString().slice(-2);
+    let formattedDate = year + '-' + month + '-' + day;
+    return formattedDate;
   };
 
   return (
@@ -65,61 +81,15 @@ export const TodoContainer: React.FC = () => {
         editNote={editNote}
         deleteNote={deleteNote}
       />
-      <Modal
+      <TodoModal
         isOpen={isOpen}
-        toggle={toggleModal}
-        className="modal-dialog modal-dialog-centered modal-dialog-zoom">
-        <ModalHeader toggle={toggleModal}>
-          {state === 'view' && (
-            <>
-              <i className="fas fa-eye mr-2" /> View List
-            </>
-          )}
-          {state === 'edit' && (
-            <>
-              <i className="fas fa-edit mr-2" /> Edit List
-            </>
-          )}
-          {state === 'add' && (
-            <>
-              <i className="fas fa-pen mr-2" /> Add List
-            </>
-          )}
-        </ModalHeader>
-        <ModalBody>
-          <div className="contact">
-            <div className="input-group">
-              {state === 'view' ? (
-                <h3>{listValue}</h3>
-              ) : (
-                <input
-                  type="text"
-                  name="label"
-                  className="form-control"
-                  placeholder="Write Something"
-                  value={listValue}
-                  onChange={e => setListValue(e.target.value)}
-                />
-              )}
-            </div>
-          </div>
-        </ModalBody>
-        <ModalFooter>
-          {state === 'edit' && (
-            <Button color="primary" onClick={updateNote}>
-              Edit
-            </Button>
-          )}
-          {state === 'add' && (
-            <Button color="primary" onClick={updateNote}>
-              Add
-            </Button>
-          )}
-          <Button color="secondary" onClick={toggleModal}>
-            Cancel
-          </Button>
-        </ModalFooter>
-      </Modal>
+        toggleModal={toggleModal}
+        state={state}
+        updateNote={updateNote}
+        setTodoValue={setTodoValue}
+        todoValue={todoValue}
+        todoDate={todoDate}
+      />
     </div>
   );
 };

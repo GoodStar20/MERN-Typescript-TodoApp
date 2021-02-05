@@ -4,7 +4,6 @@ import { Note } from './Note/Note';
 import { TodoListProps } from '../../types/types';
 
 export const Todo: React.FC<TodoListProps> = props => {
-  // useEffect
   useEffect(() => {
     props.uploadNotes();
     // eslint-disable-next-line react-hooks/exhaustive-deps

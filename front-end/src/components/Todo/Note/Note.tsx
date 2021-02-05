@@ -10,7 +10,9 @@ export const Note: React.FC<TodoListProps> = props => {
             <div>
               <button
                 className="btn btn-outline-success mr-2"
-                onClick={() => props.viewNote(note._id, note.title)}>
+                onClick={() =>
+                  props.viewNote(note._id, note.title, note.createdAt)
+                }>
                 <i className="fas fa-eye" />
               </button>
               <button
